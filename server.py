@@ -4,8 +4,10 @@
 Clase (y programa principal) para un servidor de eco en UDP simple
 """
 
+import sys
+import json
 import socketserver
-
+from datetime import datetime, date, time, timedelta
 
 class EchoHandler(socketserver.DatagramRequestHandler):
     """
@@ -13,16 +15,22 @@ class EchoHandler(socketserver.DatagramRequestHandler):
     """
 
     def handle(self):
-        """
-        handle method of the server class
-        (all requests will be handled by this method)
-        """
-        for informacion in self.client_address:
-            print(informacion)
 
-        self.wfile.write(b"Hemos recibido tu peticion")
+        dicc = {'address': ''}
+        list = []
+        IP = self.client_address[0]
+        PUERTO = self.client_address[1]
+
         for line in self.rfile:
-            print("El cliente nos manda ", line.decode('utf-8'))
+            list.append(line.decode('utf-8'))
+            message = list[0].split(' ')
+        print(message)
+
+        if message[0] == 'REGISTER':
+            self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
+            user = message[1].split(':')[1]
+            dicc['address'] = IP + ' ' + user
+            print(dicc['address'])
 
 
 if __name__ == "__main__":
