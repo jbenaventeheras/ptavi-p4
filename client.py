@@ -7,20 +7,25 @@ Programa cliente UDP que abre un socket a un servidor
 import socket
 import sys
 
-# Constantes. Dirección IP del servidor y contenido a enviar
 SERVER = sys.argv[1]
 PORT = int(sys.argv[2])
-LINE = 'HOLA'
+Client_user = sys.argv[4]
+Mess_type = sys.argv[3]
+Line_To_Send = ""
 
 
-# Creamos el socket, lo configuramos y lo atamos a un servidor/puerto
-with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
-    my_socket.connect((SERVER, PORT))
-    while LINE != 'exit' :
-        LINE = input()
-        print("Enviando:", LINE)
-        my_socket.send(bytes(LINE, 'utf-8') + b'\r\n')
-        data = my_socket.recv(1024)
-        print('Recibido -- ', data.decode('utf-8'))
+if len(sys.argv) != 5:
+        sys.exit('Usage: client.py ip puerto register' +
+                 'sip_address')
+
+if Mess_type == 'register':
+    Line_To_Send = ('REGISTER sip:' + Client_user + 'SIP/2.0\r\n'  )
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
+            my_socket.connect((SERVER, PORT))
+            my_socket.send(bytes(Line_To_Send, 'utf-8') + b'\r\n')
+            data = my_socket.recv(1024)
+            print('Recibido -- ', data.decode('utf-8'))
+else:
+    sys.exit('Usage: client.py ip puerto register sip_address')
 
 print("Socket terminado.")
