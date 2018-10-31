@@ -18,11 +18,13 @@ else:
     except:
         sys.exit('usage error: python3 server.py <port>')
 
+
+
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     """
     Echo server class
     """
-
+    final_dicc = {}
     def handle(self):
 
         dicc = {'address': '', 'expires': ''}
@@ -43,8 +45,29 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             dicc['address'] = IP + ' ' + user
             expires_date = datetime.now() + timedelta(seconds=int(expires_user))
             dicc['expires'] = expires_date.strftime(FORMAT)
-            print(dicc)
 
+        if int(expires_user) == 0:
+
+            try:
+                del self.final_dicc[user]
+                self.wfile.write(b'SIP/2.0 200 OK\r\n\r\n')
+            except KeyError:
+
+                pass
+
+        else:
+
+            self.final_dicc[user] = dicc
+            self.wfile.write(b'SIP/2.0 200 OK\r\n\r\n')
+            Now = datetime.now().strftime(FORMAT)
+            user_del = []
+
+            for user in self.final_dicc:
+                if Now >= self.final_dicc[user]['expires']:
+                    user_del.append(user)
+            for user in user_del:
+                del self.final_dicc[user]
+        print(self.final_dicc)
 
 
 
