@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
-Clase (y programa principal) para un servidor de eco en UDP simple
+Clase (y programa principal) para un servidor SIPRegisterHandler
 """
 
 import sys
@@ -18,13 +18,17 @@ else:
     except:
         sys.exit('usage error: python3 server.py <port>')
 
-
-
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     """
     Echo server class
     """
     final_dicc = {}
+
+    def register2json(self):
+
+        json.dump(self.final_dicc, open('registered.json', 'w'), indent=3)
+
+
     def handle(self):
 
         dicc = {'address': '', 'expires': ''}
@@ -67,9 +71,7 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
                     user_del.append(user)
             for user in user_del:
                 del self.final_dicc[user]
-        print(self.final_dicc)
-
-
+        self.register2json()
 
 if __name__ == "__main__":
     # Listens at localhost ('') port 6001
