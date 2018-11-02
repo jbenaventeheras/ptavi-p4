@@ -28,9 +28,19 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
 
         json.dump(self.final_dicc, open('registered.json', 'w'), indent=3)
 
+    def json2register(self):
+        """
+        Gets a json file and turns it into a dictionary file
+        """
+        try:
+            with open('registered.json', 'r') as file:
+                self.final_dicc= json.load(file)
+        except (FileNotFoundError, ValueError, json.decoder.JSONDecodeError):
+            pass
 
     def handle(self):
 
+        self.json2register()
         dicc = {'address': '', 'expires': ''}
         list = []
         IP = self.client_address[0]
